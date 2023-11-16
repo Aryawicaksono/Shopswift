@@ -5,7 +5,6 @@ const { faker } = require("@faker-js/faker");
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    const sale = ["SOLD", "FOR SALE"];
     const brokers = await Broker.findAll();
     const categories = await Category.findAll();
     if (brokers.length > 0 && categories.length > 0) {
@@ -20,7 +19,6 @@ module.exports = {
             symbol: "Rp",
           }),
           brokerId: brokers[Math.floor(Math.random() * brokers.length)].id,
-          status: sale[Math.floor(Math.random() * sale.length)],
           createdAt: new Date(),
           updatedAt: new Date(),
         });

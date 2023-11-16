@@ -21,7 +21,6 @@ class LivestockValidator extends Validator {
           throw new Error("invalid brokerId");
         }
       }),
-    check("status").notEmpty().withMessage("status must not empty"),
   ];
 }
 
