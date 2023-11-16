@@ -1,0 +1,6 @@
+{
+    "watch": ["app", "config", "index.js", "server.js"],
+    "ext": "js,json",
+    "exec": "node server.js"
+  }
+  
