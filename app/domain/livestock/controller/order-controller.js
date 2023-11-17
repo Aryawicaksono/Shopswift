@@ -1,59 +1,64 @@
 const router = require("express").Router();
-const { Order, OrderItem, Cart, sequelize } = require("../models");
-const allowedTo = require("../middlewares/permission");
-const permission = require("../constants/permission");
+const { Order, Livestock, User } = require("../../../models");
 
-router.post("/", allowedTo(permission.ADD_ORDER), async (req, res) => {
-  const items = await Cart.findAll({
-    where: { userId: req.user.id },
-  });
 
-  if (!items.length) {
-    return res.status(422).json({ error: "Cart is empty" });
-  }
-
-  const t = await sequelize.transaction();
-
+router.get("/", async (req, res) => {
   try {
-    const order = await Order.create(
-      {
-        userId: req.user.id,
-        total: items.reduce((acc, item) => acc + item.total, 0),
-      },
-      { transaction: t }
-    );
+    const orders = await Order.findAll({
+      where: { userId: req.user.id },
+      include: [
+        {
+          model: Livestock,
+        },{model:User}
+      ],
+    });
 
-    const orderItems = items.map((item) => ({
-      orderId: order.id,
-      productId: item.productId,
-      quantity: item.quantity,
-      total: item.total,
-    }));
-
-    await OrderItem.bulkCreate(orderItems, { transaction: t });
-    await Cart.destroy({ where: { userId: req.user.id } });
-    await t.commit();
-
-    res.json({ message: "Order has been created" });
-  } catch (error) {
-    await t.rollback();
-    res.status(500).json({ error: "Something went wrong" });
+    res.json(orders);
+  } catch (err) {
+    throw new Error(err);
   }
 });
 
-router.get("/", allowedTo(permission.BROWSE_ORDERS), async (req, res) => {
-  const orders = await Order.findAll({
-    where: { userId: req.user.id },
-    include: [
-      {
-        model: OrderItem,
-        as: "items",
-        include: ["product"],
-      },
-    ],
-  });
+router.post("/", async (req, res) => {
+  try {
+    const { userId, livestockId } = req.user;
 
-  res.json(orders);
+    // Dapatkan data Livestock berdasarkan livestockId
+    const livestock = await Livestock.findByPk(req.body.livestockId);
+
+    if (!livestock) {
+      return res.status(404).json({ error: "Livestock not found" });
+    }
+
+    // Hitung total berdasarkan harga Livestock
+    const total = livestock.price;
+
+    // Buat objek Order
+    const order = await Order.create({
+      userId: req.user.id,
+      livestockId: req.body.livestockId,
+      total
+    });
+    res.status(201).json({message: "Order created successfully", order})
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
+// router.post("/", async (req, res) => {
+//     const {userId, ...orderData} = req.body
+
+//     if (!userId) {
+//         return res.status(400).json({error: "userId is required"})
+//     }
+
+//     const order = await Order.create({
+//         userId,
+//         ...orderData,
+//     })
+
+//     res.status(200).json({message: "Order created successfully",order})
+// }
+// )
 module.exports = router;

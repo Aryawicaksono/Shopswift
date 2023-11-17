@@ -13,4 +13,7 @@ module.exports = {
 
   BROWSE_CATEGORIES: "browse_category",
   READ_CATEGORY: "read_category",
+
+  ADD_ORDERS: "add_order",
+  BROWSE_ORDERS: "browse_order",
 };

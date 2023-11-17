@@ -17,6 +17,9 @@ module.exports = {
 
     permission.BROWSE_CATEGORIES,
     permission.READ_CATEGORY,
+
+    permission.BROWSE_ORDERS,
+    permission.ADD_ORDERS
   ],
   [role.BROKER]: [
     permission.BROWSE_LIVESTOCK,
@@ -28,6 +31,9 @@ module.exports = {
 
     permission.BROWSE_CATEGORIES,
     permission.READ_CATEGORY,
+
+    permission.BROWSE_ORDERS,
+    permission.ADD_ORDERS
   ],
   [role.CUSTOMER]: [
     permission.BROWSE_LIVESTOCK,
@@ -38,5 +44,8 @@ module.exports = {
 
     permission.BROWSE_CATEGORIES,
     permission.READ_CATEGORY,
+    
+    permission.BROWSE_ORDERS,
+    permission.ADD_ORDERS
   ],
 };
