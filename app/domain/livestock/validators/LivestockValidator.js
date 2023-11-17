@@ -1,6 +1,6 @@
 const { check } = require("express-validator");
 const Validator = require("../../../support/Validator");
-const { Broker } = require("../../../models");
+const { Broker, Category } = require("../../../models");
 
 class LivestockValidator extends Validator {
   rules = [

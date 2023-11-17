@@ -25,14 +25,29 @@ router.get("/:id", permission(allowedTo.READ_LIVESTOCK), async (req, res) => {
 });
 
 router.post(
-  "/",
+  "/:brokerId/add",
   [permission(allowedTo.ADD_LIVESTOCK), LivestockValidator.validate()],
   async (req, res) => {
     try {
-      const livestock = await Livestock.create(req.body);
+      const { brokerId } = req.params;
+      const { categoryId, price } = req.body;
+
+      // Cek apakah broker dengan brokerId tertentu ada
+      const existingBroker = await Broker.findByPk(brokerId);
+      if (!existingBroker) {
+        return res.status(404).json({ message: "Broker not found" });
+      }
+
+      // Buat livestock dengan mengaitkannya dengan broker yang ada
+      const livestock = await Livestock.create({
+        categoryId,
+        price,
+        brokerId,
+      });
 
       res.status(201).json({ message: "Livestock created" });
     } catch (error) {
+      console.error("Livestock Creation Error:", error);
       return res.status(500).json({ message: error.message });
     }
   }

@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       models.Livestock.belongsTo(models.Broker);
       models.Livestock.belongsTo(models.Category);
+      models.Livestock.hasMany(models.Order)
       // define association here
     }
   }
