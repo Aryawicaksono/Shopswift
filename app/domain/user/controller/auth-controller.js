@@ -54,4 +54,31 @@ router.post("/register", RegisterValidator.validate(), async (req, res) => {
     res.status(500).send({ error: "Internal Server Error" });
   }
 });
+router.post("/registerbroker", RegisterValidator.validate(), async (req, res) => {
+  try {
+    const { email, password, name, phoneNumber } = req.body;
+
+    // Hash password
+    const bcryptRound = 14;
+    const hashedPassword = await bcrypt.hash(password, bcryptRound);
+
+    // Create user
+    const user = await User.create({
+      email,
+      password: hashedPassword,
+      name,
+      phoneNumber,
+      roleId: 2, // Set default roleId to 3 for Customer
+    });
+
+    // Generate and save token
+    const token = randomString.generate();
+    await Token.create({ userId: user.id, token });
+
+    res.json({ token });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: "Internal Server Error" });
+  }
+});
 module.exports = router;
